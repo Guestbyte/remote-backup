@@ -7,28 +7,6 @@ fi
 
 export $(grep -v '^#' $ENV_FILE | xargs -d '\n')
 
-if [ -z ${SSH_HOST+x} ] || [ -z ${SSH_USERNAME+x} ] || [ -z ${SSH_PASSWORD+x} ] || [ -z ${SOURCE_SERVER_PATH+x} ] || [ -z ${DESTINATION_LOCAL_PATH+x} ]; then
-    echo "INFO: Pease check .env file. Template: (example)
-BACKUP_SSH=true
-SSH_HOST=vl22330.dinaserver.com
-SSH_USERNAME=ventadecolchones
-SSH_PASSWORD=***********
-SOURCE_SERVER_PATH=~/www
-DESTINATION_LOCAL_PATH=./backups
-
-BACKUP_DB=true
-DB_HOST=vl22330.dinaserver.com
-DB_DATABASE=myventadecolchones
-DB_USER=ventadecolchones
-DB_PASS=**********
-DB_DESTINATION_PATH=./
-
-LOG_FILE=./backup.log
-MINIMAL_FREE_SPACE_GB=2
-"; >&3
-    exit
-fi
-
 MAX_LOG_SIZE=10485760 # 20MB
 DATE="`date +%Y-%m-%d`"
 BACKUP_SUFFIX="`date +%Y%m%d`"
@@ -71,28 +49,6 @@ if [ $BACKUP_SSH == 'true' ]; then
         exit
     fi
 
-    if [ -z ${SSH_HOST+x} ] || [ -z ${SSH_USERNAME+x} ] || [ -z ${SSH_PASSWORD+x} ] || [ -z ${SOURCE_SERVER_PATH+x} ] || [ -z ${DESTINATION_LOCAL_PATH+x} ]; then
-        echo "INFO: Pease check .env file. Template: (example)
-    BACKUP_SSH=true
-    SSH_HOST=vl22330.dinaserver.com
-    SSH_USERNAME=ventadecolchones
-    SSH_PASSWORD=***********
-    SOURCE_SERVER_PATH=~/www
-    DESTINATION_LOCAL_PATH=./backups
-
-    BACKUP_DB=true
-    DB_HOST=vl22330.dinaserver.com
-    DB_DATABASE=myventadecolchones
-    DB_USER=ventadecolchones
-    DB_PASS=**********
-    DB_DESTINATION_PATH=./
-
-    LOG_FILE=./backup.log
-    MINIMAL_FREE_SPACE_GB=2
-    "; >&3
-        exit
-    fi
-
     echo "$(date +%Y-%m-%d:%H:%M:%S): ---------------------------------------"
     echo "$(date +%Y-%m-%d:%H:%M:%S): Starting SSH incremental backup from '$SSH_HOST:$SOURCE_SERVER_PATH' to '$DESTINATION_LOCAL_PATH'"
     COMMAND="rsync --exclude '*.log' --exclude '*.wpress' --exclude '*.gz' --exclude '*.old' -avhrzbP --suffix=_BKP_$BACKUP_SUFFIX -e ssh $SSH_USERNAME@$SSH_HOST:$SOURCE_SERVER_PATH $DESTINATION_LOCAL_PATH"
@@ -104,7 +60,6 @@ if [ $BACKUP_SSH == 'true' ]; then
     send "${SSH_PASSWORD}\r"
     expect eof
 EOD
-
 
     echo "$(date +%Y-%m-%d:%H:%M:%S): SSH End."
     echo "$(date +%Y-%m-%d:%H:%M:%S): ---------------------------------------"
@@ -153,6 +108,3 @@ else
 fi
 
 echo "$(date +%Y-%m-%d:%H:%M:%S): ##############################"
-
-#To delete files older than 10 days
-# find $path/* -mtime +10 -exec rm {} \;
