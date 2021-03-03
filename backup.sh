@@ -3,7 +3,6 @@
 SCRIPT=$(readlink -f $0)
 SCRIPTPATH=`dirname $SCRIPT`
 ENV_FILE=$SCRIPTPATH/.env
-echo $ENV_FILE
 if [ ! -f "$ENV_FILE" ]; then
     echo "A '$ENV_FILE' file is needed." >&3
     exit
