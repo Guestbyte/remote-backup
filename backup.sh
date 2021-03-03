@@ -54,7 +54,7 @@ if [ $BACKUP_SSH == 'true' ]; then
 
     echo "$(date +%Y-%m-%d:%H:%M:%S): ---------------------------------------"
     echo "$(date +%Y-%m-%d:%H:%M:%S): Starting SSH incremental backup from '$SSH_HOST:$SOURCE_SERVER_PATH' to '$DESTINATION_LOCAL_PATH'"
-    COMMAND="rsync --exclude '*.log' --exclude '*.wpress' --exclude '*.gz' --exclude '*.old' -avhrzbP --suffix=_BKP_$BACKUP_SUFFIX -e ssh $SSH_USERNAME@$SSH_HOST:$SOURCE_SERVER_PATH $DESTINATION_LOCAL_PATH"
+    COMMAND="rsync --exclude 'cache' --exclude 'DEV/cache' --prune-empty-dirs --exclude '*.log' --exclude '*.wpress' --exclude '*.gz' --exclude '*.old' -vhrzbP --suffix=_BKP_$BACKUP_SUFFIX -e ssh $SSH_USERNAME@$SSH_HOST:$SOURCE_SERVER_PATH $DESTINATION_LOCAL_PATH"
 
     /usr/bin/expect << EOD
     set timeout -1
@@ -85,7 +85,7 @@ if [ $BACKUP_DB == 'true' ]; then
     expect eof
 EOD
 
-    COMMAND="rsync -avhrzbP -e ssh $SSH_USERNAME@$SSH_HOST:$BACKUP_FILE_NAME $DB_DESTINATION_PATH"
+    COMMAND="rsync -vhrzbP -e ssh $SSH_USERNAME@$SSH_HOST:$BACKUP_FILE_NAME $DB_DESTINATION_PATH"
 /usr/bin/expect << EOD
     set timeout -1
     spawn ${COMMAND}
